@@ -1,0 +1,43 @@
+---
+- name: Install php for Debian
+  become: yes
+  block:
+
+    - name: Add reository ondrej/php
+      ansible.builtin.apt_repository:
+        repo: ppa:ondrej/php
+    - name: Install php latest version
+      ansible.builtin.apt:
+        name: php
+        state: latest
+        update_cache: yes
+      when: php_version  == ""
+      
+    - name: Install php special version {{ php_version }}
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop: "{{ php }}"
+      when: php_version is defined and php_version != ""
+
+    - name: Insatll php-fpm
+      ansible.builtin.apt:
+        name: php{{ php_version }}-fpm
+        state: present
+        update_cache: yes
+      when: php_version is defined and php_version != ""
+
+    - name: Insatll php-mysql
+      ansible.builtin.apt:
+        name: php-mysql
+        state: latest
+
+    - name: Check version php
+      ansible.builtin.shell: |
+        php -v | awk 'NR==1 {print $1, $2}'
+      register: show_version_php
+    - name: Show version php
+      ansible.builtin.debug:
+        msg: "PHP version {{ show_version_php.stdout }} installed"
+  when: ansible_os_family == "Debian" 

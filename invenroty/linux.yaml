@@ -1,0 +1,13 @@
+---
+all:
+  children:
+    webservers:
+      hosts:
+        web01:
+          ansible_host: "{{ ip }}"
+          ansible_user: "{{ username }}"
+          ansible_password: "{{ password }}"
+      vars:
+        ip: 192.168.206.130
+        username: user
+        password: 12345678

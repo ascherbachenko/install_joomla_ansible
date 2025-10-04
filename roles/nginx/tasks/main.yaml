@@ -1,0 +1,32 @@
+---
+- name: Install nginx for Debian
+  become: yes
+  block:
+
+    - name: Install nginx latest version
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+      when: nginx_version  == ""
+    - name: Install nginx special version {{ nginx_version }}
+      ansible.builtin.apt:
+        name: "nginx-{{ nginx_version }}"
+        state: present
+        update_cache: yes
+      when: nginx_version is defined and nginx_version != ""
+
+    - name: Change user on user-date for folder /var/wwww
+      ansible.builtin.file:
+        path: /var/www
+        owner: www-data
+        group: www-data
+        recurse: yes
+        state: directory
+
+    - name: Enable NginX service and start NginX service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+  when: ansible_os_family == "Debian" 

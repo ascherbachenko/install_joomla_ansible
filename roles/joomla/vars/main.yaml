@@ -1,0 +1,3 @@
+---
+dir_joomla: /var/www/sites/joomla
+joomla: "https://downloads.joomla.org/ru/cms/joomla5/5-1-4/Joomla_5-1-4-Stable-Full_Package.zip?format=zip"

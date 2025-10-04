@@ -1,0 +1,12 @@
+---
+- hosts: web01
+  become: yes
+  gather_facts: true
+  gather_subset:
+    - hardware
+  roles:
+    - role: nginx
+    - role: php
+    - role: mysql
+    - role: joomla
+    - role: initapps

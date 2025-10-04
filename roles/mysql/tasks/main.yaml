@@ -1,0 +1,51 @@
+---
+- name: Install MySQL for Debian
+  block:
+
+    - name: Install MySQL latest version
+      ansible.builtin.apt:
+        name: mysql-server
+        state: latest
+        update_cache: yes
+      when: mysql_version == ""
+
+    - name: Install MySQL special version {{ nmysql_version }}
+      ansible.builtin.apt:
+        name: "mysql_version-{{ nmysql_version }}"
+        state: present
+        update_cache: yes
+      when: mysql_version is defined and mysql_version != ""
+
+    - name: Install pip
+      ansible.builtin.apt:
+        name: python3-pip
+        state: latest
+
+    - name: Install PyMySQL library
+      ansible.builtin.pip:
+        name: PyMySQL
+   
+    - name: Change password root user in MySQL
+      ansible.builtin.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+      #  login_user: root
+      #  login_password: "{{ mysql_root_password }}"
+
+    - name: Create database joompla_db
+      ansible.builtin.mysql_db:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        name: joompla_db;
+        state: present
+
+    - name: Create user admin
+      ansible.builtin.mysql_user:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        name: admin
+        password: "{{ mysql_admin_password }}"
+        priv: '*.*:ALL'
+
+  when: ansible_os_family == "Debian" 

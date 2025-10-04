@@ -1,0 +1,29 @@
+---
+  - name: Download joomla 5.1.4
+    ansible.builtin.get_url:
+      url: "{{ joomla }}"
+      dest: /tmp/joomla.zip
+    
+  - name: Create folder
+    ansible.builtin.file:
+      path: "{{ dir_joomla }}"
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0755'
+
+  - name: Install unzip
+    ansible.builtin.apt:
+      name: unzip
+      state: latest
+
+  - name: Extract joomla
+    ansible.builtin.unarchive:
+      src: /tmp/joomla.zip
+      dest: "{{ dir_joomla }}"
+      remote_src: yes
+      owner: www-data
+      group: www-data
+      mode: '0755'
+      keep_newer: yes
+      creates: "{{ dir_joomla }}/README.txt"

@@ -1,0 +1,26 @@
+---
+- name: Create config site
+  ansible.builtin.template:
+    src: templates/joomla.conf.j2
+    dest: /etc/nginx/sites-available/joomla.conf
+    owner: root
+    group: root
+  notify: reload nginx
+
+- name: Delete soft link default for nginx
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Create sym link for joomla
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/joomla.conf
+    dest: /etc/nginx/sites-enabled/joomla.conf
+    state: link
+    owner: root
+    group: root
+    
+- name: Rename htaccess.txt for joomla
+  ansible.builtin.command:
+    cmd: mv /var/www/sites/joomla/htaccess.txt /var/www/sites/joomla/.htaccess
+    creates: /var/www/sites/joomla/.htaccess
